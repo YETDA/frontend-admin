@@ -1,0 +1,84 @@
+@font-face {
+  font-family: 'Pretendard-Regular';
+  src: url('https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+}
+
+$font-family: 'Pretendard-Regular';
+
+$weight-thin: 100;
+$weight-extralight: 200;
+$weight-light: 300;
+$weight-regular: 400;
+$weight-medium: 500;
+$weight-semibold: 600;
+$weight-bold: 700;
+$weight-extrabold: 800;
+$weight-black: 900;
+
+/* 4️⃣ 폰트 사이즈 변수 */
+$size-xsm: 12px;
+$size-sm: 14px;
+$size-md: 16px;
+$size-lg: 18px;
+$size-title-sm: 20px;
+$size-title-md: 24px;
+$size-title-lg: 28px;
+
+/* 5️⃣ 공통 믹스인 */
+@mixin font-style($weight, $size) {
+  font-family: $font-family;
+  font-weight: $weight;
+  font-size: $size;
+}
+
+/* 7️⃣ 제목 스타일 */
+.title-lg-b {
+  @include font-style($weight-bold, $size-title-lg);
+}
+
+.title-lg {
+  @include font-style($weight-regular, $size-title-lg);
+}
+
+.title-md-b {
+  @include font-style($weight-bold, $size-title-md);
+}
+
+.title-md {
+  @include font-style($weight-regular, $size-title-md);
+}
+
+.title-sm {
+  @include font-style($weight-regular, $size-title-sm);
+}
+
+/* 8️⃣ 본문 텍스트 스타일 */
+.text-lg-b {
+  @include font-style($weight-bold, $size-lg);
+}
+
+.text-lg {
+  @include font-style($weight-regular, $size-lg);
+}
+
+.text-md-b {
+  @include font-style($weight-bold, $size-md);
+}
+
+.text-md {
+  @include font-style($weight-regular, $size-md);
+}
+
+.text-sm-b {
+  @include font-style($weight-bold, $size-sm);
+}
+
+.text-sm {
+  @include font-style($weight-regular, $size-sm);
+}
+
+.text-xsm {
+  @include font-style($weight-regular, $size-xsm);
+}
