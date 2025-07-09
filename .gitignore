@@ -47,3 +47,5 @@ next-env.d.ts
 # Editor
 .vscode
 .idea/
+
+crowdfunding-admin-dashboard/
