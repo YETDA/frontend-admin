@@ -1,0 +1,25 @@
+.admin-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+
+  &__sidebar {
+    width: 280px;
+    background-color: $white;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    height: 100vh;
+    overflow-y: auto;
+    z-index: 100;
+  }
+
+  &__main {
+    display: flex;
+    margin-left: 280px;
+  }
+
+  &__content {
+    width: 100%;
+    padding: 32px;
+  }
+}

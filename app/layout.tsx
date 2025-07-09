@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
-import '../styles/global/index.scss';
+import '@/styles/globals.scss';
+import { QueryProvider } from './providers/queryProvider';
 
 export const metadata = {
   title: '옜다 - 크라우드펀딩 운영센터',
@@ -17,7 +18,9 @@ export const metadata = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="ko">
-      <body>{children}</body>
+      <body>
+        <QueryProvider>{children}</QueryProvider>
+      </body>
     </html>
   );
 }

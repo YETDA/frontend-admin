@@ -1,0 +1,99 @@
+.sidebar {
+  &__section {
+    display: flex;
+    flex-direction: column;
+    padding: 24px;
+    gap: 4px;
+  }
+
+  &__section-title {
+    @include font-style($weight-semibold, $size-xsm);
+    color: $gray-500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 12px;
+  }
+
+  &__nav-item {
+    margin: 0 12px 8px;
+  }
+
+  &__nav-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    border-radius: $border-radius;
+    color: $gray-700;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    @include font-style($weight-regular, $size-sm);
+
+    &:hover {
+      background-color: $primary;
+      color: $white;
+    }
+
+    &--active {
+      background-color: $primary;
+      color: $white;
+
+      .sidebar__nav-badge {
+        background-color: rgba($white, 0.2);
+      }
+    }
+  }
+
+  // ✅ nav-link 밖으로 빼야 할 것들
+  &__nav-text-group {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+
+  &__nav-top-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+    gap: 8px;
+  }
+
+  &__nav-label {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    @include font-style($weight-regular, $size-sm);
+  }
+
+  &__nav-description {
+    margin-top: 2px;
+    color: rgba(255, 255, 255, 0.8);
+    @include font-style($weight-regular, $size-xsm);
+  }
+
+  &__nav-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+  }
+
+  &__nav-text {
+    flex: 1;
+    @include font-style($weight-regular, $size-sm);
+  }
+
+  &__nav-badge {
+    background-color: $primary;
+    color: $white;
+    padding: 2px 8px;
+    border-radius: 12px;
+    min-width: 20px;
+    text-align: center;
+    @include font-style($weight-regular, $size-xsm);
+  }
+}
