@@ -1,12 +1,9 @@
 'use client';
 
 import { Card, CardContent } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search } from 'lucide-react';
+import SearchBar from '@/app/(admin)/projectReview/_components/searchBar';
 import { PROJECT_CATEGORIES } from '../_status/projectReviewFilter';
-
-// 상수 나중에 정해지면 이동 노션 볼필요 있음
 
 interface ProjectReviewFiltersProps {
   search: string;
@@ -29,17 +26,12 @@ export default function ProjectReviewFilters({
     <Card className="data-table">
       <CardContent className="p-6">
         <div className="flex gap-4 items-center">
-          <div className="flex-1">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-              <Input
-                value={search}
-                onChange={e => onSearchChange(e.target.value)}
-                placeholder="프로젝트 제목, 창작자명으로 검색..."
-                className="pl-12 h-12 bg-gray-50 border-gray-200 focus:bg-white"
-              />
-            </div>
-          </div>
+          <SearchBar
+            value={search}
+            onChange={onSearchChange}
+            placeholder="프로젝트 제목, 창작자명으로 검색..."
+            className="flex-1"
+          />
 
           <Select value={status} onValueChange={onStatusChange}>
             <SelectTrigger className="w-40 h-12">
