@@ -1,10 +1,11 @@
 'use client';
-import { projects, reviewStats } from '@/dummy/projectReviewPage';
+import { projects } from '@/dummy/projectReviewPage';
 import BulkReviewButton from './_components/bulkReviewButton';
 import ProjectReviewCards from './_components/projectReviewCards';
 import { useState } from 'react';
 import ProjectReviewFilters from './_components/projectReviewFilters';
 import ProjectReviewTable from './_components/table/projectReviewTable';
+import { projectReviewTotalStats } from './_status/projectReviewTotal';
 
 export default function ProjectReview() {
   const [search, setSearch] = useState('');
@@ -26,7 +27,7 @@ export default function ProjectReview() {
         </div>
       </div>
       {/* Review Statistics */}
-      <ProjectReviewCards stats={reviewStats} />
+      <ProjectReviewCards stats={projectReviewTotalStats} />
 
       {/* Filters & Search */}
       <ProjectReviewFilters
