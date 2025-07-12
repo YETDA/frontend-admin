@@ -2,7 +2,7 @@
 
 import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import SearchBar from '@/app/(admin)/projectReview/_components/searchBar';
+import SearchBar from '@/app/(admin)/projectReview/_components/projectReviewsearchBar';
 import { PROJECT_CATEGORIES } from '../_status/projectReviewFilter';
 
 interface ProjectReviewFiltersProps {
