@@ -4,7 +4,7 @@ import {
   CheckCircle as ProjectApprover,
   XCircle as ProjectRejecter,
 } from 'lucide-react';
-
+// 오타
 export const projectReviewTotalStats = [
   {
     title: '판매 심사 대기',

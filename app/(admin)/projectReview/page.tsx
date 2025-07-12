@@ -6,12 +6,15 @@ import { useState } from 'react';
 import ProjectReviewFilters from './_components/projectReviewFilters';
 import ProjectReviewTable from './_components/table/projectReviewTable';
 import { projectReviewTotalStats } from './_status/projectReviewTotal';
+import Navigation from '@/components/ui/nav/navigation';
+import { Heart, ShoppingCart } from 'lucide-react';
 
 export default function ProjectReview() {
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState('all');
   const [category, setCategory] = useState('all');
   const pendingCount = projects.filter(p => p.status === '심사중').length;
+  const [activeTab, setActiveTab] = useState<'sales' | 'sponsor'>('sales');
   return (
     <div className="space-y-8">
       {/* Page Header */}
@@ -28,19 +31,43 @@ export default function ProjectReview() {
       </div>
       {/* Review Statistics */}
       <ProjectReviewCards stats={projectReviewTotalStats} />
-
-      {/* Filters & Search */}
-      <ProjectReviewFilters
-        search={search}
-        onSearchChange={setSearch}
-        status={status}
-        onStatusChange={setStatus}
-        category={category}
-        onCategoryChange={setCategory}
+      <Navigation
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        tabs={[
+          { key: 'sales', label: '판매 프로젝트', icon: ShoppingCart },
+          { key: 'sponsor', label: '후원 프로젝트', icon: Heart },
+        ]}
       />
 
-      {/* Projects Table */}
-      <ProjectReviewTable projects={projects} pendingCount={pendingCount} />
+      <div className="mt-6">
+        {activeTab === 'sales' && (
+          <>
+            <ProjectReviewFilters
+              search={search}
+              onSearchChange={setSearch}
+              status={status}
+              onStatusChange={setStatus}
+              category={category}
+              onCategoryChange={setCategory}
+            />
+            <ProjectReviewTable projects={projects} pendingCount={pendingCount} />
+          </>
+        )}
+        {activeTab === 'sponsor' && (
+          <>
+            <ProjectReviewFilters
+              search={search}
+              onSearchChange={setSearch}
+              status={status}
+              onStatusChange={setStatus}
+              category={category}
+              onCategoryChange={setCategory}
+            />
+            <ProjectReviewTable projects={projects} pendingCount={pendingCount} />
+          </>
+        )}
+      </div>
     </div>
   );
 }
