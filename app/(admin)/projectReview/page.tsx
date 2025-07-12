@@ -15,6 +15,15 @@ export default function ProjectReview() {
   const [category, setCategory] = useState('all');
   const pendingCount = projects.filter(p => p.status === '심사중').length;
   const [activeTab, setActiveTab] = useState<'sales' | 'sponsor'>('sales');
+
+  // 페이지네이션 임시 변수 선언
+  const page = 1; // 현재 페이지
+  const pageSize = 10; // 한 페이지에 표시할 프로젝트 수
+  const totalCount = projects.length; // 전체 프로젝트 수
+  const onPageChange = (newPage: number) => {
+    console.log(`페이지 변경: ${newPage}`);
+  };
+
   return (
     <div className="space-y-8">
       {/* Page Header */}
@@ -51,7 +60,15 @@ export default function ProjectReview() {
               category={category}
               onCategoryChange={setCategory}
             />
-            <ProjectReviewTable projects={projects} pendingCount={pendingCount} />
+            <ProjectReviewTable
+              projects={projects}
+              mode={activeTab}
+              pendingCount={pendingCount}
+              page={page} // 페이지네이션 props 전달
+              pageSize={pageSize}
+              totalCount={totalCount}
+              onPageChange={onPageChange}
+            />
           </>
         )}
         {activeTab === 'sponsor' && (
@@ -64,7 +81,15 @@ export default function ProjectReview() {
               category={category}
               onCategoryChange={setCategory}
             />
-            <ProjectReviewTable projects={projects} pendingCount={pendingCount} />
+            <ProjectReviewTable
+              mode={activeTab}
+              projects={projects}
+              pendingCount={pendingCount}
+              page={page} // 페이지네이션 props 전달
+              pageSize={pageSize}
+              totalCount={totalCount}
+              onPageChange={onPageChange}
+            />
           </>
         )}
       </div>
