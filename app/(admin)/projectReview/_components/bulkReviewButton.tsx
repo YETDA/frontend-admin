@@ -2,15 +2,22 @@
 
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogClose, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
 import { Filter } from 'lucide-react';
+import { useState } from 'react';
 
 interface BulkReviewButtonProps {
   pendingCount: number;
 }
 
 export default function BulkReviewButton({ pendingCount }: BulkReviewButtonProps) {
+  const [selectedCriteria, setSelectedCriteria] = useState<string[]>([]);
+
+  const handleCriteriaChange = (criteria: string) => {
+    setSelectedCriteria(prev =>
+      prev.includes(criteria) ? prev.filter(item => item !== criteria) : [...prev, criteria],
+    );
+  };
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -32,26 +39,29 @@ export default function BulkReviewButton({ pendingCount }: BulkReviewButtonProps
           </div>
 
           {/* 심사 기준 선택 */}
-          <div className="space-y-3">
-            <div>
-              <label className="text-sm font-medium mb-2 block">심사 기준</label>
-              <Select>
-                <SelectTrigger>
-                  <SelectValue placeholder="일괄 처리 기준 선택" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="auto-approve">자동 승인 (완성도 90% 이상)</SelectItem>
-                  <SelectItem value="priority-high">우선순위 높음만</SelectItem>
-                  <SelectItem value="low-risk">위험도 낮음만</SelectItem>
-                  <SelectItem value="manual">수동 선택</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* 심사 의견 입력 */}
-            <div>
-              <label className="text-sm font-medium mb-2 block">일괄 심사 의견</label>
-              <Textarea placeholder="일괄 처리에 대한 공통 의견을 입력하세요..." className="min-h-24" />
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-3">심사 기준</label>
+            <div className="space-y-2">
+              <label className="flex items-center">
+                <input
+                  type="checkbox"
+                  value="approve-unapproved"
+                  checked={selectedCriteria.includes('approve-unapproved')}
+                  onChange={() => handleCriteriaChange('approve-unapproved')}
+                  className="mr-3"
+                />
+                <span className="text-sm">승인되지 않은 프로젝트 일괄 승인</span>
+              </label>
+              <label className="flex items-center">
+                <input
+                  type="checkbox"
+                  value="reject-approved"
+                  checked={selectedCriteria.includes('reject-approved')}
+                  onChange={() => handleCriteriaChange('reject-approved')}
+                  className="mr-3"
+                />
+                <span className="text-sm">승인된 프로젝트 일괄 반려</span>
+              </label>
             </div>
           </div>
 
@@ -67,11 +77,15 @@ export default function BulkReviewButton({ pendingCount }: BulkReviewButtonProps
             </DialogClose>
             <Button
               variant="destructive"
-              className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+              className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={!selectedCriteria.includes('reject-approved')}
             >
               일괄 반려
             </Button>
-            <Button className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
+            <Button
+              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={!selectedCriteria.includes('approve-unapproved')}
+            >
               일괄 승인
             </Button>
           </div>
