@@ -9,7 +9,14 @@ import ProjectReviewTable from './_components/table/projectReviewTable';
 import { projectReviewTotalStats } from './_status/projectReviewTotal';
 import Navigation from '@/components/ui/nav/navigation';
 import { Heart, ShoppingCart } from 'lucide-react';
-import { ProjectRow } from '@/types/page/projectReview/table';
+import PaginationComponent from './_components/projectReviewPagination';
+import {
+  handlePageChange,
+  handleSearchChange,
+  handleStatusChange,
+  handleCategoryChange,
+  handleTabChange,
+} from './_components/paginationControls';
 
 export default function ProjectReview() {
   const [search, setSearch] = useState('');
@@ -19,8 +26,7 @@ export default function ProjectReview() {
 
   // 페이지네이션 설정
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 3; // 한 페이지당 3개 프로젝트
-  const maxPages = 5; // 최대 5개 페이지 버튼
+  const pageSize = 3; // 한 페이지당 10개 프로젝트로 증가
 
   // 필터링 로직
   const filteredProjects = useMemo(() => {
@@ -29,7 +35,6 @@ export default function ProjectReview() {
       if (activeTab === 'sales' && project.type !== 'sales') return false;
       if (activeTab === 'sponsor' && project.type !== 'sponsor') return false;
 
-      // 검색 필터링
       if (search) {
         const searchLower = search.toLowerCase();
         const title = project.type === 'sales' ? project.salesTitle : project.sponsorTitle;
@@ -39,8 +44,6 @@ export default function ProjectReview() {
           return false;
         }
       }
-
-      // 상태 필터링
       if (status !== 'all') {
         const statusMap = {
           pending: '심사중',
@@ -51,8 +54,6 @@ export default function ProjectReview() {
           return false;
         }
       }
-
-      // 카테고리 필터링
       if (category !== 'all' && project.category !== category) {
         return false;
       }
@@ -70,37 +71,10 @@ export default function ProjectReview() {
   const endIndex = startIndex + pageSize;
   const currentProjects = filteredProjects.slice(startIndex, endIndex);
 
-  // 페이지 변경 핸들러
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-  };
-
-  // 필터 변경 시 첫 페이지로 이동
-  const handleSearchChange = (value: string) => {
-    setSearch(value);
-    setCurrentPage(1);
-  };
-
-  const handleStatusChange = (value: string) => {
-    setStatus(value);
-    setCurrentPage(1);
-  };
-
-  const handleCategoryChange = (value: string) => {
-    setCategory(value);
-    setCurrentPage(1);
-  };
-
-  const handleTabChange = (tab: 'sales' | 'sponsor') => {
-    setActiveTab(tab);
-    setCurrentPage(1);
-  };
-
   const pendingCount = projects.filter(p => p.status === '심사중').length;
 
   return (
     <div className="space-y-8">
-      {/* Page Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="section-header">프로젝트 심사 센터</h1>
@@ -113,12 +87,11 @@ export default function ProjectReview() {
         </div>
       </div>
 
-      {/* Review Statistics */}
       <ProjectReviewCards stats={projectReviewTotalStats} />
 
       <Navigation
         activeTab={activeTab}
-        setActiveTab={handleTabChange}
+        setActiveTab={tab => handleTabChange(tab, setActiveTab, setCurrentPage)}
         tabs={[
           { key: 'sales', label: '판매 프로젝트', icon: ShoppingCart },
           { key: 'sponsor', label: '후원 프로젝트', icon: Heart },
@@ -128,11 +101,11 @@ export default function ProjectReview() {
       <div className="mt-6">
         <ProjectReviewFilters
           search={search}
-          onSearchChange={handleSearchChange}
+          onSearchChange={value => handleSearchChange(value, setSearch, setCurrentPage)}
           status={status}
-          onStatusChange={handleStatusChange}
+          onStatusChange={value => handleStatusChange(value, setStatus, setCurrentPage)}
           category={category}
-          onCategoryChange={handleCategoryChange}
+          onCategoryChange={value => handleCategoryChange(value, setCategory, setCurrentPage)}
         />
 
         <ProjectReviewTable
@@ -142,16 +115,38 @@ export default function ProjectReview() {
           page={currentPage}
           pageSize={pageSize}
           totalCount={totalCount}
-          onPageChange={handlePageChange}
+          onPageChange={page => handlePageChange(page, setCurrentPage)}
         />
 
-        {/* 필터 결과 요약 */}
-        {search || status !== 'all' || category !== 'all' ? (
-          <div className="mt-4 text-sm text-gray-600">
-            총 {totalCount}개의 프로젝트 중 {currentProjects.length}개를 표시하고 있습니다. (페이지 {currentPage} /{' '}
-            {totalPages})
+        {/* 필터 결과 요약 - 조건부 렌더링 개선 */}
+        {(search || status !== 'all' || category !== 'all') && (
+          <div className="mt-4 p-3 bg-gray-50 rounded-lg border">
+            <p className="text-sm text-gray-600">
+              <span className="font-medium">검색 결과:</span> 총 {totalCount}개의 프로젝트 중{' '}
+              <span className="font-medium text-blue-600">{currentProjects.length}개</span>를 표시하고 있습니다.
+            </p>
+            <p className="text-xs text-gray-500 mt-1">
+              현재 페이지: {currentPage} / {totalPages}
+            </p>
           </div>
-        ) : null}
+        )}
+        {totalPages > 1 && (
+          <div className="mt-8">
+            <PaginationComponent
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={page => handlePageChange(page, setCurrentPage)}
+            />
+          </div>
+        )}
+
+        {totalCount === 0 && (
+          <div className="mt-8 text-center py-12">
+            <div className="text-gray-400 text-lg mb-2">📋</div>
+            <p className="text-gray-600 font-medium">조건에 맞는 프로젝트가 없습니다.</p>
+            <p className="text-sm text-gray-500 mt-1">다른 검색 조건을 시도해보세요.</p>
+          </div>
+        )}
       </div>
     </div>
   );

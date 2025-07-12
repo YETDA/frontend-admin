@@ -12,9 +12,10 @@ import {
 } from '@/constants/projectReviewDetail';
 import { ReactNode } from 'react';
 
-type ProjectReviewDetailDialogProps =
-  | { project: SalesProjectRow; mode: 'sales' }
-  | { project: SponsorProjectRow; mode: 'sponsor' };
+interface ProjectReviewDetailDialogProps {
+  project: SalesProjectRow | SponsorProjectRow;
+  mode: 'sales' | 'sponsor';
+}
 
 export default function ProjectReviewDetailDialog({ project, mode }: ProjectReviewDetailDialogProps) {
   const image = project.image ?? PLACEHOLDER_IMAGE;
@@ -22,7 +23,6 @@ export default function ProjectReviewDetailDialog({ project, mode }: ProjectRevi
 
   const handleApprove = async () => {
     try {
-      // TODO: 승인 API 호출 로직 추가
       console.log('승인 처리:', project.id);
     } catch (error) {
       console.error('승인 처리 중 오류:', error);
@@ -31,7 +31,6 @@ export default function ProjectReviewDetailDialog({ project, mode }: ProjectRevi
 
   const handleReject = async () => {
     try {
-      // TODO: 반려 API 호출 로직 추가
       console.log('반려 처리:', project.id);
     } catch (error) {
       console.error('반려 처리 중 오류:', error);
@@ -76,14 +75,12 @@ export default function ProjectReviewDetailDialog({ project, mode }: ProjectRevi
   );
 }
 
-// 기본 정보 섹션 - 타입 가드 사용
-function ProjectBasicInfo({
-  project,
-  mode,
-}: {
+interface ProjectBasicInfoProps {
   project: SalesProjectRow | SponsorProjectRow;
   mode: 'sales' | 'sponsor';
-}) {
+}
+
+function ProjectBasicInfo({ project, mode }: ProjectBasicInfoProps) {
   return (
     <div className="space-y-4">
       <h3 className="font-semibold text-gray-900">{DETAIL_DIALOG_TEXT.basicInfo}</h3>
@@ -109,8 +106,11 @@ function ProjectBasicInfo({
   );
 }
 
-// 판매 프로젝트 기본 정보
-function SalesBasicInfo({ project }: { project: SalesProjectRow }) {
+interface SalesBasicInfoProps {
+  project: SalesProjectRow;
+}
+
+function SalesBasicInfo({ project }: SalesBasicInfoProps) {
   return (
     <>
       <InfoRow label="판매자" value={project.sellerNickname} />
@@ -122,8 +122,11 @@ function SalesBasicInfo({ project }: { project: SalesProjectRow }) {
   );
 }
 
-// 후원 프로젝트 기본 정보
-function SponsorBasicInfo({ project }: { project: SponsorProjectRow }) {
+interface SponsorBasicInfoProps {
+  project: SponsorProjectRow;
+}
+
+function SponsorBasicInfo({ project }: SponsorBasicInfoProps) {
   return (
     <>
       <InfoRow label="창작자" value={project.userNickname} />
@@ -134,8 +137,12 @@ function SponsorBasicInfo({ project }: { project: SponsorProjectRow }) {
   );
 }
 
-// 프로젝트 이미지 섹션
-function ProjectImageSection({ image, mode }: { image: string; mode: 'sales' | 'sponsor' }) {
+interface ProjectImageSectionProps {
+  image: string;
+  mode: 'sales' | 'sponsor';
+}
+
+function ProjectImageSection({ image, mode }: ProjectImageSectionProps) {
   return (
     <div className="space-y-4">
       <h3 className="font-semibold text-gray-900">{DETAIL_DIALOG_TEXT.projectImage}</h3>
@@ -149,8 +156,11 @@ function ProjectImageSection({ image, mode }: { image: string; mode: 'sales' | '
   );
 }
 
-// 프로젝트 설명 섹션
-function ProjectDescriptionSection({ description }: { description: string }) {
+interface ProjectDescriptionSectionProps {
+  description: string;
+}
+
+function ProjectDescriptionSection({ description }: ProjectDescriptionSectionProps) {
   return (
     <div>
       <h3 className="font-semibold text-gray-900 mb-2">{DETAIL_DIALOG_TEXT.projectDescription}</h3>
@@ -161,8 +171,11 @@ function ProjectDescriptionSection({ description }: { description: string }) {
   );
 }
 
-// 판매 옵션 섹션
-function SalesOptionsSection({ options }: { options: SalesProjectRow['options'] }) {
+interface SalesOptionsSectionProps {
+  options: SalesProjectRow['options'];
+}
+
+function SalesOptionsSection({ options }: SalesOptionsSectionProps) {
   return (
     <div>
       <h3 className="font-semibold text-gray-900 mb-3">{DETAIL_DIALOG_TEXT.salesOptions}</h3>
@@ -183,16 +196,13 @@ function SalesOptionsSection({ options }: { options: SalesProjectRow['options'] 
   );
 }
 
-// 액션 버튼 섹션
-function ActionButtonsSection({
-  mode,
-  onApprove,
-  onReject,
-}: {
+interface ActionButtonsSectionProps {
   mode: 'sales' | 'sponsor';
   onApprove: () => void;
   onReject: () => void;
-}) {
+}
+
+function ActionButtonsSection({ mode, onApprove, onReject }: ActionButtonsSectionProps) {
   return (
     <div className="flex gap-3 justify-end pt-4 border-t">
       <DialogClose asChild>
@@ -213,8 +223,12 @@ function ActionButtonsSection({
   );
 }
 
-// 정보 행 컴포넌트
-function InfoRow({ label, value }: { label: string; value: ReactNode }) {
+interface InfoRowProps {
+  label: string;
+  value: ReactNode;
+}
+
+function InfoRow({ label, value }: InfoRowProps) {
   return (
     <p>
       <span className="font-medium">{label}:</span> {value}
