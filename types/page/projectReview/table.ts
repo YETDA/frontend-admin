@@ -1,13 +1,50 @@
-export interface ProjectRow {
+// types/page/projectReview/table.ts
+
+export type SalesProjectRow = {
+  type: 'sales';
   id: number;
-  title: string;
-  creator: string;
+  salesTitle: string; // mapped from projectTitle
+  productName: string;
+  sellerNickname: string;
+  category: string;
+  deliveryMethod: string;
+  status: string;
+  approved: boolean;
+  createdAt: string;
+  averageDeliveryTime: string;
+  description: string;
+  projectUrl: string;
+  options: {
+    id: number;
+    name: string;
+    price: string;
+  }[];
+  image?: string;
+};
+
+export type SponsorProjectRow = {
+  type: 'sponsor';
+  id: number;
+  sponsorTitle: string;
+  userNickname: string;
   category: string;
   fundingGoal: string;
-  priority: '높음' | '보통' | '낮음';
-  completeness: number;
-  status: '심사중' | '승인' | '반려';
-  createdAt: string;
+  status: string;
+  approved: boolean;
   description: string;
-  riskLevel: '낮음' | '보통' | '높음';
+  startDate: string;
+  endDate: string;
+  projectUrl: string;
+  image?: string;
+};
+
+export type ProjectRow = SalesProjectRow | SponsorProjectRow;
+
+// 타입 가드 함수 추가
+export function isSalesProjectRow(project: ProjectRow): project is SalesProjectRow {
+  return project.type === 'sales';
+}
+
+export function isSponsorProjectRow(project: ProjectRow): project is SponsorProjectRow {
+  return project.type === 'sponsor';
 }

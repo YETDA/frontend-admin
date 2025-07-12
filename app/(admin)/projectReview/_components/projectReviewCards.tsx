@@ -1,11 +1,12 @@
 'use client';
 
 import { Card, CardContent } from '@/components/ui/card';
+import { ReactNode } from 'react';
 
 interface ReviewStatItem {
   title: string;
   value: string;
-  icon: React.ElementType;
+  icon: ReactNode;
   colorClass: string;
   description: string;
 }
@@ -29,9 +30,7 @@ function StatsCard({ title, value, icon: Icon, colorClass, description }: Review
     <Card className="metric-card">
       <CardContent className="p-6">
         <div className="flex items-center justify-between mb-4">
-          <div className={`w-12 h-12 ${colorClass} rounded-xl flex items-center justify-center`}>
-            <Icon className="w-6 h-6 text-white" />
-          </div>
+          <div className={`w-12 h-12 ${colorClass} rounded-xl flex items-center justify-center`}>{Icon}</div>
         </div>
         <div className="space-y-2">
           <h3 className="text-2xl font-bold text-gray-900">{value}</h3>
