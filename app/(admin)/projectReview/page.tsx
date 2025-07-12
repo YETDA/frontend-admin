@@ -1,91 +1,66 @@
 'use client';
 
-import { projects } from '@/dummy/projectReviewPage';
+import { Heart, ShoppingCart } from 'lucide-react';
 import BulkReviewButton from './_components/bulkReviewButton';
 import ProjectReviewCards from './_components/projectReviewCards';
-import { useState, useMemo } from 'react';
 import ProjectReviewFilters from './_components/projectReviewFilters';
 import ProjectReviewTable from './_components/table/projectReviewTable';
-import { projectReviewTotalStats } from './_status/projectReviewTotal';
-import Navigation from '@/components/ui/nav/navigation';
-import { Heart, ShoppingCart } from 'lucide-react';
 import PaginationComponent from './_components/projectReviewPagination';
+import Navigation from '@/components/ui/nav/navigation';
+import { projectReviewTotalStats } from './_status/projectReviewTotal';
+import useProjectReview from '@/hooks/useProjectReview';
 import {
-  handlePageChange,
   handleSearchChange,
   handleStatusChange,
   handleCategoryChange,
   handleTabChange,
 } from './_components/paginationControls';
+import handlePageChange from './_components/paginationControls';
+import { ProjectRow } from '@/types/page/projectReview/table';
 
-export default function ProjectReview() {
-  const [search, setSearch] = useState('');
-  const [status, setStatus] = useState('all');
-  const [category, setCategory] = useState('all');
-  const [activeTab, setActiveTab] = useState<'sales' | 'sponsor'>('sales');
+interface ProjectReviewPageProps {
+  pageSize?: number;
+}
 
-  // 페이지네이션 설정
-  const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 3; // 한 페이지당 10개 프로젝트로 증가
+export default function ProjectReview({ pageSize = 3 }: ProjectReviewPageProps) {
+  const {
+    search,
+    status,
+    category,
+    activeTab,
+    currentPage,
+    projects, // 현재 페이지의 데이터만 (최대 3개)
+    totalCount,
+    totalPages,
+    loading,
+    error,
+    filteredProjects, // 필터링된 전체 데이터
+    setSearch,
+    setStatus,
+    setCategory,
+    setActiveTab,
+    setCurrentPage,
+  } = useProjectReview({ pageSize });
 
-  // 필터링 로직
-  const filteredProjects = useMemo(() => {
-    let filtered = projects.filter(project => {
-      // 탭별 필터링
-      if (activeTab === 'sales' && project.type !== 'sales') return false;
-      if (activeTab === 'sponsor' && project.type !== 'sponsor') return false;
+  // 전체 필터링된 데이터에서 심사중인 프로젝트 수 계산
+  const pendingCount = filteredProjects.filter(p => p.status === '심사중').length;
+  const hasFilters = Boolean(search || status !== 'all' || category !== 'all'); // Boolean으로 명시적 변환
 
-      if (search) {
-        const searchLower = search.toLowerCase();
-        const title = project.type === 'sales' ? project.salesTitle : project.sponsorTitle;
-        const nickname = project.type === 'sales' ? project.sellerNickname : project.userNickname;
+  console.log('Main Page Debug:', {
+    currentPage,
+    totalPages,
+    projectsLength: projects.length,
+    totalCount,
+    pageSize,
+  });
 
-        if (!title.toLowerCase().includes(searchLower) && !nickname.toLowerCase().includes(searchLower)) {
-          return false;
-        }
-      }
-      if (status !== 'all') {
-        const statusMap = {
-          pending: '심사중',
-          approved: '승인',
-          rejected: '반려',
-        };
-        if (project.status !== statusMap[status as keyof typeof statusMap]) {
-          return false;
-        }
-      }
-      if (category !== 'all' && project.category !== category) {
-        return false;
-      }
-
-      return true;
-    });
-
-    return filtered;
-  }, [projects, activeTab, search, status, category]);
-
-  // 페이지네이션 계산
-  const totalCount = filteredProjects.length;
-  const totalPages = Math.ceil(totalCount / pageSize);
-  const startIndex = (currentPage - 1) * pageSize;
-  const endIndex = startIndex + pageSize;
-  const currentProjects = filteredProjects.slice(startIndex, endIndex);
-
-  const pendingCount = projects.filter(p => p.status === '심사중').length;
+  if (error) {
+    return <ErrorState error={error} />;
+  }
 
   return (
     <div className="space-y-8">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="section-header">프로젝트 심사 센터</h1>
-          <p className="section-description">
-            등록된 크라우드펀딩 프로젝트를 전문적으로 검토하고 승인 여부를 결정합니다
-          </p>
-        </div>
-        <div className="flex gap-3">
-          <BulkReviewButton pendingCount={pendingCount} />
-        </div>
-      </div>
+      <PageHeader pendingCount={pendingCount} />
 
       <ProjectReviewCards stats={projectReviewTotalStats} />
 
@@ -98,56 +73,182 @@ export default function ProjectReview() {
         ]}
       />
 
-      <div className="mt-6">
-        <ProjectReviewFilters
-          search={search}
-          onSearchChange={value => handleSearchChange(value, setSearch, setCurrentPage)}
-          status={status}
-          onStatusChange={value => handleStatusChange(value, setStatus, setCurrentPage)}
-          category={category}
-          onCategoryChange={value => handleCategoryChange(value, setCategory, setCurrentPage)}
-        />
+      <ContentSection
+        search={search}
+        status={status}
+        category={category}
+        projects={projects} // 현재 페이지의 데이터만 (최대 3개)
+        activeTab={activeTab}
+        pendingCount={pendingCount}
+        currentPage={currentPage}
+        pageSize={pageSize}
+        totalCount={totalCount}
+        totalPages={totalPages}
+        loading={loading}
+        hasFilters={hasFilters}
+        onSearchChange={value => handleSearchChange(value, setSearch, setCurrentPage)}
+        onStatusChange={value => handleStatusChange(value, setStatus, setCurrentPage)}
+        onCategoryChange={value => handleCategoryChange(value, setCategory, setCurrentPage)}
+        onPageChange={page => handlePageChange(page, setCurrentPage)}
+      />
+    </div>
+  );
+}
 
+interface PageHeaderProps {
+  pendingCount: number;
+}
+
+function PageHeader({ pendingCount }: PageHeaderProps) {
+  return (
+    <div className="flex items-center justify-between">
+      <div>
+        <h1 className="section-header">프로젝트 심사 센터</h1>
+        <p className="section-description">등록된 크라우드펀딩 프로젝트를 전문적으로 검토하고 승인 여부를 결정합니다</p>
+      </div>
+      <div className="flex gap-3">
+        <BulkReviewButton pendingCount={pendingCount} />
+      </div>
+    </div>
+  );
+}
+
+interface ContentSectionProps {
+  search: string;
+  status: string;
+  category: string;
+  projects: ProjectRow[];
+  activeTab: 'sales' | 'sponsor';
+  pendingCount: number;
+  currentPage: number;
+  pageSize: number;
+  totalCount: number;
+  totalPages: number;
+  loading: boolean;
+  hasFilters: boolean;
+  onSearchChange: (value: string) => void;
+  onStatusChange: (value: string) => void;
+  onCategoryChange: (value: string) => void;
+  onPageChange: (page: number) => void;
+}
+
+function ContentSection({
+  search,
+  status,
+  category,
+  projects,
+  activeTab,
+  pendingCount,
+  currentPage,
+  pageSize,
+  totalCount,
+  totalPages,
+  loading,
+  hasFilters,
+  onSearchChange,
+  onStatusChange,
+  onCategoryChange,
+  onPageChange,
+}: ContentSectionProps) {
+  return (
+    <div className="mt-6">
+      <ProjectReviewFilters
+        search={search}
+        onSearchChange={onSearchChange}
+        status={status}
+        onStatusChange={onStatusChange}
+        category={category}
+        onCategoryChange={onCategoryChange}
+      />
+
+      {/* 로딩 상태 표시 */}
+      {loading ? (
+        <div className="mt-8 text-center py-12">
+          <div className="text-gray-400 text-lg mb-2">⏳</div>
+          <p className="text-gray-600 font-medium">데이터를 불러오는 중...</p>
+        </div>
+      ) : (
         <ProjectReviewTable
-          projects={currentProjects}
+          projects={projects} // 현재 페이지의 데이터만 (최대 3개)
           mode={activeTab}
           pendingCount={pendingCount}
           page={currentPage}
           pageSize={pageSize}
           totalCount={totalCount}
-          onPageChange={page => handlePageChange(page, setCurrentPage)}
+          onPageChange={onPageChange}
+          // loading prop 제거
         />
+      )}
 
-        {/* 필터 결과 요약 - 조건부 렌더링 개선 */}
-        {(search || status !== 'all' || category !== 'all') && (
-          <div className="mt-4 p-3 bg-gray-50 rounded-lg border">
-            <p className="text-sm text-gray-600">
-              <span className="font-medium">검색 결과:</span> 총 {totalCount}개의 프로젝트 중{' '}
-              <span className="font-medium text-blue-600">{currentProjects.length}개</span>를 표시하고 있습니다.
-            </p>
-            <p className="text-xs text-gray-500 mt-1">
-              현재 페이지: {currentPage} / {totalPages}
-            </p>
-          </div>
-        )}
-        {totalPages > 1 && (
-          <div className="mt-8">
-            <PaginationComponent
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={page => handlePageChange(page, setCurrentPage)}
-            />
-          </div>
-        )}
+      {hasFilters && !loading && (
+        <FilterSummary
+          totalCount={totalCount}
+          currentCount={projects.length} // 현재 페이지의 실제 데이터 수
+          currentPage={currentPage}
+          totalPages={totalPages}
+          pageSize={pageSize}
+        />
+      )}
 
-        {totalCount === 0 && (
-          <div className="mt-8 text-center py-12">
-            <div className="text-gray-400 text-lg mb-2">📋</div>
-            <p className="text-gray-600 font-medium">조건에 맞는 프로젝트가 없습니다.</p>
-            <p className="text-sm text-gray-500 mt-1">다른 검색 조건을 시도해보세요.</p>
-          </div>
-        )}
-      </div>
+      {totalPages > 1 && !loading && (
+        <div className="mt-8">
+          <PaginationComponent currentPage={currentPage} totalPages={totalPages} onPageChange={onPageChange} />
+        </div>
+      )}
+
+      {totalCount === 0 && !loading && <EmptyState />}
+    </div>
+  );
+}
+
+interface FilterSummaryProps {
+  totalCount: number;
+  currentCount: number;
+  currentPage: number;
+  totalPages: number;
+  pageSize: number;
+}
+
+function FilterSummary({ totalCount, currentCount, currentPage, totalPages, pageSize }: FilterSummaryProps) {
+  const startIndex = (currentPage - 1) * pageSize + 1;
+  const endIndex = Math.min(startIndex + currentCount - 1, totalCount);
+
+  return (
+    <div className="mt-4 p-3 bg-gray-50 rounded-lg border">
+      <p className="text-sm text-gray-600">
+        <span className="font-medium">검색 결과:</span> 총 {totalCount}개 중{' '}
+        <span className="font-medium text-blue-600">
+          {startIndex}-{endIndex}번째
+        </span>{' '}
+        항목 표시
+      </p>
+      <p className="text-xs text-gray-500 mt-1">
+        페이지 {currentPage} / {totalPages} (페이지당 최대 {pageSize}개)
+      </p>
+    </div>
+  );
+}
+
+interface ErrorStateProps {
+  error: string;
+}
+
+function ErrorState({ error }: ErrorStateProps) {
+  return (
+    <div className="mt-8 text-center py-12">
+      <div className="text-red-400 text-lg mb-2">⚠️</div>
+      <p className="text-red-600 font-medium">데이터 로드 중 오류가 발생했습니다.</p>
+      <p className="text-sm text-gray-500 mt-1">{error}</p>
+    </div>
+  );
+}
+
+function EmptyState() {
+  return (
+    <div className="mt-8 text-center py-12">
+      <div className="text-gray-400 text-lg mb-2">📋</div>
+      <p className="text-gray-600 font-medium">조건에 맞는 프로젝트가 없습니다.</p>
+      <p className="text-sm text-gray-500 mt-1">다른 검색 조건을 시도해보세요.</p>
     </div>
   );
 }
