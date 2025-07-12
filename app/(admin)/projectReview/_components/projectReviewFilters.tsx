@@ -4,14 +4,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Search } from 'lucide-react';
+import { PROJECT_CATEGORIES } from '../_status/projectReviewFilter';
 
-export const REVIEW_CATEGORIES = [
-  { value: 'all', label: '전체' },
-  { value: 'tech', label: '테크놀로지' },
-  { value: 'fashion', label: '패션' },
-  { value: 'game', label: '게임' },
-  { value: 'art', label: '예술' },
-];
 // 상수 나중에 정해지면 이동 노션 볼필요 있음
 
 interface ProjectReviewFiltersProps {
@@ -64,7 +58,7 @@ export default function ProjectReviewFilters({
               <SelectValue placeholder="카테고리" />
             </SelectTrigger>
             <SelectContent>
-              {REVIEW_CATEGORIES.map(item => (
+              {PROJECT_CATEGORIES.map(item => (
                 <SelectItem key={item.value} value={item.value}>
                   {item.label}
                 </SelectItem>
