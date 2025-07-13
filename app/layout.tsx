@@ -1,10 +1,11 @@
 import type { ReactNode } from 'react';
-import '../styles/global/index.scss';
+import { QueryProvider } from './providers/queryProvider';
+import '@/app/globals.css';
+import ClientAuthWrapper from './ClientAuthWrapper';
 
 export const metadata = {
   title: '옜다 - 크라우드펀딩 운영센터',
   description: '기술 기반 크라우드펀딩 운영센터 관리자(Admin) 대시보드',
-  themeColor: '#1E9EFF',
   icons: { icon: '/favicon.ico' },
   openGraph: {
     title: '옜다 - 크라우드펀딩 운영센터',
@@ -14,10 +15,18 @@ export const metadata = {
   },
 };
 
+export const viewport = {
+  themeColor: '#1E9EFF',
+};
+
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="ko">
-      <body>{children}</body>
+      <body>
+        <QueryProvider>
+          <ClientAuthWrapper>{children}</ClientAuthWrapper>
+        </QueryProvider>
+      </body>
     </html>
   );
 }

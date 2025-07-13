@@ -1,0 +1,103 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+    --primary: 210 100% 56%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+    --accent: 240 4.8% 95.9%;
+    --accent-foreground: 240 5.9% 10%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 210 100% 56%;
+    --radius: 0.5rem;
+
+    /* Custom brand colors */
+    --brand-primary: 210 100% 56%; /* #1E9EFF */
+    --brand-secondary: 210 100% 52%; /* #1f8ce6 */
+    --brand-tertiary: 225 100% 50%; /* #0064ff */
+    --neutral-bg: 240 4.8% 97%; /* Light Gray */
+
+    /* Crowdfunding-specific icon colors */
+    --cf-project-review: 210 100% 56%; /* #1E9EFF */
+    --cf-settlement: 142 76% 36%; /* #16a34a */
+    --cf-user-mgmt: 262 83% 58%; /* #8b5cf6 */
+    --cf-report-alert: 25 95% 53%; /* #f97316 */
+    --cf-analytics: 217 91% 60%; /* #3b82f6 */
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: "Apple SD Gothic Neo", "Noto Sans KR", -apple-system, BlinkMacSystemFont, system-ui, "Malgun Gothic",
+      "맑은 고딕", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-feature-settings: "kern" 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+@layer components {
+  .brand-gradient {
+    background: linear-gradient(135deg, #1e9eff 0%, #1f8ce6 100%);
+  }
+
+  .cf-icon-container {
+    @apply rounded-xl flex items-center justify-center transition-all duration-200;
+    background: hsl(var(--brand-primary));
+  }
+
+  .cf-icon-container:hover {
+    background: hsl(var(--brand-secondary));
+    transform: translateY(-1px);
+  }
+
+  .cf-icon-container.project-review {
+    background: hsl(var(--cf-project-review));
+  }
+
+  .cf-icon-container.settlement {
+    background: hsl(var(--cf-settlement));
+  }
+
+  .cf-icon-container.user-mgmt {
+    background: hsl(var(--cf-user-mgmt));
+  }
+
+  .cf-icon-container.report-alert {
+    background: hsl(var(--cf-report-alert));
+  }
+
+  .section-header {
+    @apply text-xl font-semibold text-gray-900 mb-2;
+  }
+
+  .section-description {
+    @apply text-sm text-gray-600 mb-6;
+  }
+
+  .metric-card {
+    @apply bg-white rounded-xl border border-gray-100 p-6 hover:shadow-sm transition-shadow;
+  }
+
+  .data-table {
+    @apply bg-white rounded-xl border border-gray-100 overflow-hidden;
+  }
+}
