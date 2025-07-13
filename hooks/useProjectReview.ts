@@ -1,13 +1,15 @@
 import { useState, useEffect, useCallback } from 'react';
-import fetchProjectReviews from '@/lib/projectReviewApi';
-import { projects } from '@/dummy/projectReviewPage';
+// import fetchProjectReviews from '@/lib/projectReviewApi';
+// import { projects } from '@/dummy/projectReviewPage';
 import { ProjectRow } from '@/types/page/projectReview/table'; // 타입 import 추가
+import { useAdminProjectsQuery } from '@/lib/queries/useAdminProjectsQuery';
 
 interface UseProjectReviewProps {
   pageSize?: number;
 }
 
 export default function useProjectReview({ pageSize = 3 }: UseProjectReviewProps = {}) {
+  const { data: projectsData } = useAdminProjectsQuery();
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState('all');
   const [category, setCategory] = useState('all');
@@ -54,7 +56,7 @@ export default function useProjectReview({ pageSize = 3 }: UseProjectReviewProps
       */
 
       // 임시 필터링 로직 (더미 데이터용)
-      const filtered = projects.filter(project => {
+      const filtered = (projectsData ?? []).filter(project => {
         if (activeTab === 'sales' && project.type !== 'sales') return false;
         if (activeTab === 'sponsor' && project.type !== 'sponsor') return false;
 

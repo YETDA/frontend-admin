@@ -7,39 +7,66 @@ function getPageSize(page: string, totalCount: string): string {
   return (remaining >= pageSize ? pageSize : Math.max(remaining, 0)).toString();
 }
 
-const types = ['DONATION', 'PURCHASE'];
+//const types = ['DONATION', 'PURCHASE'];
 const statuses = ['UNDER_AUDIT', 'REJECTED', 'RECRUITING', 'COMPLETED'];
 
-export async function fetchAdminProjects(page: string, totalCount: string) {
+async function fetchSingleTypeProjects(type: string, page: string, totalCount: string) {
   const size = getPageSize(page, totalCount);
   const joinedStatuses = statuses.join(',');
-  //const joinedSort = sort.join(','); // 필요시 정렬도
 
+  const res = await api.get('/api/v1/admin/project', {
+    params: {
+      type,
+      statuses: joinedStatuses,
+    },
+  });
+
+  return res.data;
+}
+
+export async function fetchAdminProjects({
+  page,
+  totalCount,
+  type,
+}: {
+  page: string;
+  totalCount: string;
+  type: 'DONATION' | 'PURCHASE' | 'ALL';
+}) {
   try {
-    console.log('---------------API 호출 시작---------------');
-    const res = await api.get('/api/v1/admin/project', {
-      params: {
-        type: types[0],
-        statuses: joinedStatuses,
-        // page,
-        // size,
-        // sort: joinedSort, // 필요하면 추가
-      },
-    });
+    console.log('🚀 fetchAdminProjects 시작...', { page, totalCount, type });
 
-    console.log('-----------✅ API 호출 성공-----------', res.data);
-    return res.data;
+    if (type === 'ALL') {
+      // DONATION + PURCHASE 병렬로 호출
+      const [donationRes, purchaseRes] = await Promise.all([
+        fetchSingleTypeProjects('DONATION', page, totalCount),
+        fetchSingleTypeProjects('PURCHASE', page, totalCount),
+      ]);
+
+      // 둘 다 content 배열이라면 병합
+      const combinedContent = [...(donationRes?.data?.content ?? []), ...(purchaseRes?.data?.content ?? [])];
+
+      // 페이지 정보는 합치기 복잡하니 content 중심 반환
+      return {
+        status: 200,
+        message: '성공',
+        data: {
+          content: combinedContent,
+          totalElements: combinedContent.length,
+        },
+      };
+    } else {
+      // 단일 타입
+      return await fetchSingleTypeProjects(type, page, totalCount);
+    }
   } catch (error: any) {
-    console.error('❌ API 호출 실패:', error);
-    const errorMessage = error.response?.data?.message || error.message || '알 수 없는 오류가 발생했습니다.';
-    const status = error.response?.status || 'N/A';
-    alert(`🚨 API 호출 실패\n\n상태코드: ${status}\n오류 메시지: ${errorMessage}`);
-
+    console.error('❌ fetchAdminProjects 실패:', error);
     throw error;
   }
 }
 
-// 에러 로깅을 위한 유틸리티 함수
+//-------------------------------------------------나중에 위치 변동 예정-------------------------------------------------
+
 export function logApiError(functionName: string, error: any) {
   console.group(`🚨 ${functionName} 에러`);
   console.error('Error Object:', error);
