@@ -1,16 +1,12 @@
-import type {
-  InternalAxiosRequestConfig,
-  AxiosError,
-  AxiosResponse,
-} from "axios";
+import type { InternalAxiosRequestConfig, AxiosError, AxiosResponse } from 'axios';
 
-import axios from "axios";
+import axios from 'axios';
 
 export const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
   timeout: 10000,
   headers: {
-    "Content-Type": "application/json",
+    'Content-Type': 'application/json',
   },
 });
 
@@ -31,11 +27,11 @@ api.interceptors.request.use(
     localStorage는 브라우저에만 있으니 서버에서는 접근하면 안 됨
     → typeof window !== 'undefined' 로 클라이언트인지 체크
     */
-    if (typeof window !== "undefined") {
-      const token = localStorage.getItem("accessToken");
+    if (typeof window !== 'undefined') {
+      const token = localStorage.getItem('accessToken');
       if (token && config.headers?.set) {
         // 최신 AxiosHeaders 타입이 .set() 메서드 제공
-        config.headers.set("Authorization", `Bearer ${token}`);
+        config.headers.set('Authorization', `Bearer ${token}`);
       }
     }
     return config;
@@ -47,10 +43,17 @@ api.interceptors.response.use(
   (response: AxiosResponse) => response,
   (error: AxiosError) => {
     if (error.response?.status === 401) {
-      console.warn("401 Unauthorized - 로그인 필요!");
+      console.warn('401 Unauthorized - 로그인 필요!');
       // 401 Unauthorized = “인증이 없거나 잘못됐다” → 로그인(토큰) 다시
       // 여기서 로그아웃 처리나 리프레시 토큰 로직
     }
     return Promise.reject(error);
   },
 );
+api.interceptors.request.use(config => {
+  const token = localStorage.getItem('accessToken');
+  if (token) {
+    config.headers['Authorization'] = `Bearer ${token}`;
+  }
+  return config;
+});
