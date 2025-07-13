@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { QueryProvider } from './providers/queryProvider';
 import '@/app/globals.css';
+import ClientAuthWrapper from './ClientAuthWrapper';
 
 export const metadata = {
   title: '옜다 - 크라우드펀딩 운영센터',
@@ -22,7 +23,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="ko">
       <body>
-        <QueryProvider>{children}</QueryProvider>
+        <QueryProvider>
+          <ClientAuthWrapper>{children}</ClientAuthWrapper>
+        </QueryProvider>
       </body>
     </html>
   );
