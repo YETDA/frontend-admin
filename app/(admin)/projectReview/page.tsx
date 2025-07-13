@@ -19,11 +19,8 @@ import handlePageChange from './_components/paginationControls';
 import { ProjectRow } from '@/types/page/projectReview/table';
 import { useAdminProjectsQuery } from '@/lib/queries/useAdminProjectsQuery';
 
-interface ProjectReviewPageProps {
-  pageSize?: number;
-}
-
-export default function ProjectReview({ pageSize = 3 }: ProjectReviewPageProps) {
+export default function ProjectReview() {
+  const pageSize = 3;
   const {
     search,
     status,
