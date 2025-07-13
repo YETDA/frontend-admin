@@ -17,6 +17,7 @@ import {
 } from './_components/paginationControls';
 import handlePageChange from './_components/paginationControls';
 import { ProjectRow } from '@/types/page/projectReview/table';
+import { useAdminProjectsQuery } from '@/lib/queries/useAdminProjectsQuery';
 
 interface ProjectReviewPageProps {
   pageSize?: number;
@@ -41,7 +42,8 @@ export default function ProjectReview({ pageSize = 3 }: ProjectReviewPageProps) 
     setActiveTab,
     setCurrentPage,
   } = useProjectReview({ pageSize });
-
+  const { data: projectsData } = useAdminProjectsQuery();
+  console.log('데이터:', projectsData, projectsData?.length);
   // 전체 필터링된 데이터에서 심사중인 프로젝트 수 계산
   const pendingCount = filteredProjects.filter(p => p.status === '심사중').length;
   const hasFilters = Boolean(search || status !== 'all' || category !== 'all'); // Boolean으로 명시적 변환

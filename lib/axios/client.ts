@@ -1,16 +1,12 @@
-import type {
-  InternalAxiosRequestConfig,
-  AxiosError,
-  AxiosResponse,
-} from "axios";
+import type { InternalAxiosRequestConfig, AxiosError, AxiosResponse } from 'axios';
 
-import axios from "axios";
+import axios from 'axios';
 
 export const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
   timeout: 10000,
   headers: {
-    "Content-Type": "application/json",
+    'Content-Type': 'application/json',
   },
 });
 
@@ -24,33 +20,37 @@ export const api = axios.create({
     3. Authorization 헤더를 자동으로 붙임
     4. 최종 config로 서버에 전송
 */
+function getCookie(name: string): string | null {
+  if (typeof document === 'undefined') return null;
+
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) {
+    return parts.pop()?.split(';').shift() ?? null;
+  }
+  return null;
+}
+
 api.interceptors.request.use(
-  (config: InternalAxiosRequestConfig) => {
-    /*
-    Next.js는 서버사이드(SSR)에서도 코드가 실행됨
-    localStorage는 브라우저에만 있으니 서버에서는 접근하면 안 됨
-    → typeof window !== 'undefined' 로 클라이언트인지 체크
-    */
-    if (typeof window !== "undefined") {
-      const token = localStorage.getItem("accessToken");
-      if (token && config.headers?.set) {
-        // 최신 AxiosHeaders 타입이 .set() 메서드 제공
-        config.headers.set("Authorization", `Bearer ${token}`);
+  config => {
+    if (typeof window !== 'undefined') {
+      // 먼저 localStorage
+      let token = localStorage.getItem('accessToken');
+
+      // 없으면 쿠키에서
+      if (!token) {
+        token = getCookie('accessToken');
+      }
+      // Authorization 헤더
+      if (token) {
+        if (config.headers?.set) {
+          config.headers.set('Authorization', `Bearer ${token}`);
+        } else {
+          config.headers['Authorization'] = `Bearer ${token}`;
+        }
       }
     }
     return config;
   },
-  (error: AxiosError) => Promise.reject(error),
-);
-
-api.interceptors.response.use(
-  (response: AxiosResponse) => response,
-  (error: AxiosError) => {
-    if (error.response?.status === 401) {
-      console.warn("401 Unauthorized - 로그인 필요!");
-      // 401 Unauthorized = “인증이 없거나 잘못됐다” → 로그인(토큰) 다시
-      // 여기서 로그아웃 처리나 리프레시 토큰 로직
-    }
-    return Promise.reject(error);
-  },
+  error => Promise.reject(error),
 );
