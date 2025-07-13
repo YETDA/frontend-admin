@@ -143,14 +143,21 @@ interface ProjectImageSectionProps {
 }
 
 function ProjectImageSection({ image, mode }: ProjectImageSectionProps) {
+  const getSafeImage = (url?: string) => {
+    if (!url) return '/placeholder.svg';
+    if (url.includes('example.com/profile.jpg')) return '/placeholder.jpeg';
+    return url;
+  };
+
   return (
     <div className="space-y-4">
       <h3 className="font-semibold text-gray-900">{DETAIL_DIALOG_TEXT.projectImage}</h3>
       <div className="relative">
-        <img src={image} alt="프로젝트 대표 이미지" className="w-full h-48 object-cover rounded-lg border" />
-        <span className={mode === 'sales' ? DETAIL_DIALOG_STYLES.salesBadge : DETAIL_DIALOG_STYLES.sponsorBadge}>
-          {DETAIL_DIALOG_TEXT.representativeImage}
-        </span>
+        <img
+          src={getSafeImage(image)}
+          alt="프로젝트 대표 이미지"
+          className="w-full h-48 object-cover rounded-lg border"
+        />
       </div>
     </div>
   );
