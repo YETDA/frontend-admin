@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { QueryProvider } from './providers/queryProvider';
 import '@/app/globals.css';
-import ClientAuthWrapper from './ClientAuthWrapper';
+import ClientAuthWrapper from './clientAuthWrapper';
 
 export const metadata = {
   title: '옜다 - 크라우드펀딩 운영센터',
