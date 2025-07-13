@@ -16,14 +16,18 @@ export default function TestPage() {
 
     try {
       console.log('🚀 fetchAdminProjects 테스트 시작...');
-      const data = await fetchAdminProjects('0', '100');
+      const data = await fetchAdminProjects({
+        page: '0',
+        totalCount: '100',
+        type: 'ALL',
+      });
       console.log(
         'content데이터',
-        data?.data.content,
+        data,
         '\n----------------------------------------------------------------\n전체 데이터 길이:',
-        data?.data.length,
+        data,
       );
-      setResult(data?.data);
+      setResult(data);
       // 성공 알림
       alert(`API 호출 성공!\n데이터 길이: ${data?.length || 0}개\n콘솔에서 상세 정보를 확인하세요.`);
     } catch (err: any) {
