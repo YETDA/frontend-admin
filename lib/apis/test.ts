@@ -12,11 +12,21 @@ export async function getProjectById() {
 }
 export async function testAdminToken() {
   try {
-    const res = await api.post('/api/v1/token/admin');
-    console.log('Authorization 헤더:', res.headers['authorization']);
-    alert(`Access Token 있나요: ${res.headers['authorization']}`);
+    const res = await api.post(
+      '/api/v1/token/admin',
+      {},
+      {
+        withCredentials: true,
+      },
+    );
+
+    console.log('Authorization:', res.headers['authorization']);
+    alert(`Access Token: ${res.headers['authorization']}`);
   } catch (error) {
     console.error('인증 실패:', error);
     alert('관리자 인증 실패! 다시 로그인 필요');
   }
+}
+export function getUserInfo() {
+  return api.get('/api/v1/user/me');
 }

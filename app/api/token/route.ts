@@ -10,3 +10,16 @@ export async function POST(req: NextRequest) {
 
   return response;
 }
+/*
+export async function GET(req: NextRequest) {
+  const accessToken = req.cookies.get('accessToken')?.value;
+  if (!accessToken) return NextResponse.json({ error: 'No token' }, { status: 401 });
+
+  try {
+    const payload = jwt.verify(accessToken, process.env.JWT_SECRET!);
+    return NextResponse.json({ payload });
+  } catch {
+    return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
+  }
+}
+*/
