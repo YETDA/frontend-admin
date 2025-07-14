@@ -6,6 +6,10 @@ import Link from 'next/link';
 import { Github } from 'lucide-react';
 
 export default function LoginPage() {
+  const redirectUri = encodeURIComponent('http://localhost:3000');
+  const kakaoLoginUrl = `${process.env.NEXT_PUBLIC_API_URL}/oauth2/authorization/kakao?state=${redirectUri}`;
+  const githubLoginUrl = `${process.env.NEXT_PUBLIC_API_URL}/oauth2/authorization/github`;
+
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center">
       <Card className="w-[400px] shadow-lg">
@@ -26,7 +30,7 @@ export default function LoginPage() {
             <Button
               className="w-full h-12 bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-medium"
               onClick={() => {
-                /* 카카오 로그인 로직 */
+                window.location.href = kakaoLoginUrl;
               }}
             >
               <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="currentColor">
@@ -39,7 +43,7 @@ export default function LoginPage() {
               variant="outline"
               className="w-full h-12 border-gray-300 hover:bg-gray-50 font-medium bg-transparent"
               onClick={() => {
-                /* Github 로그인 로직 */
+                window.location.href = githubLoginUrl;
               }}
             >
               <Github className="w-5 h-5 mr-2" />
