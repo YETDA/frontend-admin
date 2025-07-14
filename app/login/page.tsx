@@ -16,8 +16,8 @@ export default function LoginPage() {
                 CF
               </div>
               <div className="ml-3">
-                <h1 className="text-xl font-bold text-gray-900">크라우드펀딩 운영센터</h1>
-                <p className="text-sm text-gray-500">Crowdfunding Operations Center</p>
+                <h1 className="text-xl font-bold text-gray-900">예따 운영 관리자</h1>
+                <p className="text-sm text-gray-500">운영 관리자 페이지에 오신걸 환영합니다</p>
               </div>
             </div>
           </div>
