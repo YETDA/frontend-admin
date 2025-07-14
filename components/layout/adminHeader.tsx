@@ -25,6 +25,9 @@ export function AdminHeader() {
       // 2. 클라이언트 쿠키 삭제 (non-HttpOnly 쿠키용)
       document.cookie = 'accessToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
       document.cookie = 'refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+      localStorage.removeItem('accessToken');
+      //localStorage.removeItem('userInfo');
+      sessionStorage.clear();
 
       // 3. 클라이언트 상태관리 스토어 초기화
       // 예시: Zustand, Redux 등의 사용자 상태 초기화
