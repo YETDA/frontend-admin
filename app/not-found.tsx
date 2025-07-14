@@ -11,7 +11,7 @@ export default function NotFound() {
           <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <FileQuestion className="w-8 h-8 text-red-500" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">404 - 페이지를 찾을 수 없습니다</h1>
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">페이지를 찾을 수 없습니다</h1>
           <p className="text-gray-600">
             요청하신 페이지가 존재하지 않거나
             <br />
