@@ -2,12 +2,14 @@
 
 import { useState } from 'react';
 import { fetchAdminProjects } from '@/lib/apis/projects';
-import { getProjectById, testAdminToken } from '@/lib/apis/test';
+import { getProjectById, getUserInfo, testAdminToken } from '@/lib/apis/test';
+import { decodeAccessToken, getCookie } from '@/utils/cookie';
 
 export default function TestPage() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
+  const accessToken = getCookie('accessToken'); // 쿠키 읽는 함수
 
   const handleFetchProjects = async () => {
     setLoading(true);
@@ -28,10 +30,60 @@ export default function TestPage() {
         data,
       );
       setResult(data);
-      // 성공 알림
       alert(`API 호출 성공!\n데이터 길이: ${data?.length || 0}개\n콘솔에서 상세 정보를 확인하세요.`);
+      if (accessToken) {
+        const payload = decodeAccessToken(accessToken);
+        console.log('있는거?', payload?.role);
+      }
     } catch (err: any) {
       console.error('❌ fetchAdminProjects 실패:', err);
+      setError(err.message || '알 수 없는 오류가 발생했습니다.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGetUserInfo = async () => {
+    setLoading(true);
+    setError(null);
+    setResult(null);
+
+    try {
+      console.log('🚀 getUserInfo 테스트 시작...');
+      const data = await getUserInfo();
+      console.log('사용자 정보:', data);
+      setResult(data);
+      alert(`사용자 정보 조회 성공!\n콘솔에서 상세 정보를 확인하세요.`);
+    } catch (err: any) {
+      console.error('❌ getUserInfo 실패:', err);
+      setError(err.message || '알 수 없는 오류가 발생했습니다.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleTestToken = async () => {
+    setLoading(true);
+    setError(null);
+    setResult(null);
+
+    try {
+      console.log('🚀 토큰 검증 테스트 시작...');
+      const response = await fetch('/api/token', {
+        method: 'GET',
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        throw new Error(`토큰 검증 실패: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log('토큰 검증 결과:', data);
+      setResult(data);
+      alert(`토큰 검증 성공!\n콘솔에서 상세 정보를 확인하세요.`);
+    } catch (err: any) {
+      console.error('❌ 토큰 검증 실패:', err);
       setError(err.message || '알 수 없는 오류가 발생했습니다.');
     } finally {
       setLoading(false);
@@ -50,11 +102,47 @@ export default function TestPage() {
           관리자 토큰 발급 테스트
         </button>
 
+        {/* 토큰 검증 테스트 버튼 */}
+        <button
+          onClick={handleTestToken}
+          disabled={loading}
+          className={`px-4 py-2 rounded-lg shadow transition-colors flex items-center gap-2 ${
+            loading ? 'bg-gray-400 text-white cursor-not-allowed' : 'bg-red-600 text-white hover:bg-red-700'
+          }`}
+        >
+          {loading ? (
+            <>
+              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+              로딩 중...
+            </>
+          ) : (
+            '토큰 검증 테스트 (/api/token)'
+          )}
+        </button>
+
         <button
           onClick={getProjectById}
           className="px-4 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 transition-colors"
         >
           프로젝트 조회 (ID=1, 서버 확인용)
+        </button>
+
+        {/* getUserInfo 테스트 버튼 */}
+        <button
+          onClick={handleGetUserInfo}
+          disabled={loading}
+          className={`px-4 py-2 rounded-lg shadow transition-colors flex items-center gap-2 ${
+            loading ? 'bg-gray-400 text-white cursor-not-allowed' : 'bg-orange-600 text-white hover:bg-orange-700'
+          }`}
+        >
+          {loading ? (
+            <>
+              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+              로딩 중...
+            </>
+          ) : (
+            '사용자 정보 조회'
+          )}
         </button>
 
         {/* fetchAdminProjects 테스트 버튼 */}
@@ -95,7 +183,7 @@ export default function TestPage() {
 
               <div className="p-3 bg-gray-50 border border-gray-200 rounded">
                 <p>
-                  <strong>데이터 길이:</strong> {result?.length || 0}개
+                  <strong>데이터 길이:</strong> {result?.length || '단일 객체'}
                 </p>
                 <p>
                   <strong>데이터 타입:</strong> {Array.isArray(result) ? '배열' : typeof result}
