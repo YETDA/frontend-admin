@@ -24,7 +24,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     <html lang="ko">
       <body>
         <QueryProvider>
-          <ClientAuthWrapper>{children}</ClientAuthWrapper>
+          {children}
+          {/* <ClientAuthWrapper>{children}</ClientAuthWrapper> */}
         </QueryProvider>
       </body>
     </html>
