@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "yetda": "ts-node --project tsconfig.server.json server.ts",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -67,12 +68,19 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@types/cookie-parser": "^1.4.9",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3",
     "@types/jsonwebtoken": "^9.0.10",
-    "@types/node": "^20",
+    "@types/node": "^20.19.8",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
     "eslint": "^9",
     "eslint-config-next": "15.3.5",
-    "typescript": "^5"
+    "express": "^5.1.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
   }
 }
