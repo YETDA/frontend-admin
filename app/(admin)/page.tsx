@@ -12,7 +12,7 @@ export default function HomePage() {
   useEffect(() => {
     if (token) {
       localStorage.setItem('accessToken', token);
-      router.push('/');
+      router.push('/dashboard');
     }
   }, [token, router]);
 

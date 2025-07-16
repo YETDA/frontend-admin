@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { Github } from 'lucide-react';
 
 export default function LoginPage() {
-  const redirectUri = encodeURIComponent('http://localhost:3000');
+  const redirectUri = encodeURIComponent('https://localhost:3000');
   const kakaoLoginUrl = `${process.env.NEXT_PUBLIC_API_URL}/oauth2/authorization/kakao?state=${redirectUri}`;
   const githubLoginUrl = `${process.env.NEXT_PUBLIC_API_URL}/oauth2/authorization/github`;
 
@@ -51,7 +51,7 @@ export default function LoginPage() {
             </Button>
 
             <div className="pt-4 border-t border-gray-200">
-              <Link href="/">
+              <Link href="https://www.yetfront.booktri.site/">
                 <Button variant="ghost" className="w-full h-12 text-gray-600 hover:text-gray-900 font-medium">
                   서비스 홈으로 가기
                 </Button>
