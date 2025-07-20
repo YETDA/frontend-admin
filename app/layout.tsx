@@ -1,5 +1,6 @@
-import type { ReactNode } from 'react';
+import { type ReactNode } from 'react';
 import { QueryProvider } from './providers/queryProvider';
+import TokenSync from './components/tokenSync';
 import '@/app/globals.css';
 
 export const metadata = {
@@ -22,7 +23,10 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="ko">
       <body>
-        <QueryProvider>{children}</QueryProvider>
+        <QueryProvider>
+          <TokenSync />
+          {children}
+        </QueryProvider>
       </body>
     </html>
   );
