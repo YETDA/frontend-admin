@@ -4,12 +4,58 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import Link from 'next/link';
 import { Github } from 'lucide-react';
+import axios from 'axios';
+import { useEffect, useState } from 'react';
+import { useUserStore, UserInfo } from '@/stores/useUserStore';
+import { useRouter } from 'next/navigation';
 
 export default function LoginPage() {
-  const redirectUri = encodeURIComponent('https://localhost:3000');
-  const kakaoLoginUrl = `${process.env.NEXT_PUBLIC_API_URL}/oauth2/authorization/kakao?state=${redirectUri}`;
-  const githubLoginUrl = `${process.env.NEXT_PUBLIC_API_URL}/oauth2/authorization/github`;
+  const redirectUri = encodeURIComponent('http://localhost:3000');
 
+  const handleKakaoLogin = () => {
+    window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/oauth2/authorization/kakao?state=${redirectUri}`;
+  };
+
+  const handleGithubLogin = () => {
+    window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/oauth2/authorization/github`;
+  };
+  const router = useRouter();
+  const [userData, setUserData] = useState<UserInfo | null>(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/user/mypage`, {
+          withCredentials: true,
+        });
+
+        const user = res.data.data;
+
+        useUserStore.getState().setUser({
+          name: user.name,
+          email: user.email,
+          image: user.image,
+          portfolioAddress: user.portfolioAddress,
+          introduce: user.introduce,
+          userId: String(user.user_id),
+          isAuthenticated: true,
+        });
+        useUserStore.getState().setPersistMode('post-login');
+        setUserData(user);
+      } catch (err: any) {
+        if (err.response?.status === 401) {
+          console.warn('유저 상태 초기화');
+          useUserStore.getState().clearUser();
+        } else {
+          console.error('예상 외의 에러', err);
+          router.push('/login');
+          console.warn('인증되지 않은 사용자이거나 토큰 없음:', err);
+        }
+      }
+    };
+
+    fetchUser();
+  }, []);
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center">
       <Card className="w-[400px] shadow-lg">
@@ -29,9 +75,7 @@ export default function LoginPage() {
           <div className="space-y-4">
             <Button
               className="w-full h-12 bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-medium"
-              onClick={() => {
-                window.location.href = kakaoLoginUrl;
-              }}
+              onClick={handleKakaoLogin}
             >
               <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M12 3c5.799 0 10.5 3.664 10.5 8.185 0 4.52-4.701 8.184-10.5 8.184a13.5 13.5 0 0 1-1.727-.11l-4.408 2.883c-.501.265-.678.236-.472-.413l.892-3.678c-2.88-1.46-4.785-3.99-4.785-6.866C1.5 6.665 6.201 3 12 3z" />
@@ -42,9 +86,7 @@ export default function LoginPage() {
             <Button
               variant="outline"
               className="w-full h-12 border-gray-300 hover:bg-gray-50 font-medium bg-transparent"
-              onClick={() => {
-                window.location.href = githubLoginUrl;
-              }}
+              onClick={handleGithubLogin}
             >
               <Github className="w-5 h-5 mr-2" />
               Github 계정으로 로그인
