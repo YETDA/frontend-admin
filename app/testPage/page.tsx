@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { fetchAdminProjects } from '@/lib/apis/projects';
 import { getProjectById, getUserInfo, testAdminToken } from '@/lib/apis/test';
-import { decodeAccessToken, getCookie } from '@/utils/cookie';
+import { decodeAccessToken, fetchAccessToken, getCookie, syncAccessTokenFromCookie } from '@/utils/cookie';
 
 export default function TestPage() {
   const [loading, setLoading] = useState(false);
@@ -88,6 +88,37 @@ export default function TestPage() {
     } finally {
       setLoading(false);
     }
+    const data = await fetchAccessToken(); // 쿠키 포함으로 서버에 나 누구냐 물어보기
+    console.log('✅ data:', data);
+  };
+
+  const handleSaveCookieToLocalStorage = async () => {
+    setLoading(true);
+    setError(null);
+    setResult(null);
+
+    try {
+      console.log('🚀 쿠키 → localStorage 저장 테스트 시작...');
+      const token = await fetchAccessToken();
+      console.log('✅ 저장된 토큰:', token);
+
+      // localStorage에서 확인
+      const savedToken = localStorage.getItem('accessToken');
+      console.log('✅ localStorage에서 읽어온 토큰:', savedToken);
+
+      setResult({
+        message: '쿠키를 localStorage에 저장했습니다!',
+        token: token,
+        savedInLocalStorage: savedToken === token,
+      });
+
+      alert('쿠키 → localStorage 저장 완료!');
+    } catch (err: any) {
+      console.error('❌ 쿠키 저장 실패:', err);
+      setError(err.message || '알 수 없는 오류가 발생했습니다.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -100,6 +131,24 @@ export default function TestPage() {
           className="px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition-colors"
         >
           관리자 토큰 발급 테스트
+        </button>
+
+        {/* 새로 추가된 버튼 */}
+        <button
+          onClick={handleSaveCookieToLocalStorage}
+          disabled={loading}
+          className={`px-4 py-2 rounded-lg shadow transition-colors flex items-center gap-2 ${
+            loading ? 'bg-gray-400 text-white cursor-not-allowed' : 'bg-green-600 text-white hover:bg-green-700'
+          }`}
+        >
+          {loading ? (
+            <>
+              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+              로딩 중...
+            </>
+          ) : (
+            '쿠키 → localStorage 저장 테스트'
+          )}
         </button>
 
         {/* 토큰 검증 테스트 버튼 */}
@@ -119,7 +168,12 @@ export default function TestPage() {
             '토큰 검증 테스트 (/api/token)'
           )}
         </button>
-
+        <button
+          onClick={syncAccessTokenFromCookie}
+          className="px-4 py-2 bg-cyan-600 text-white rounded-lg shadow hover:bg-cyan-700 transition-colors"
+        >
+          쿠키 → localStorage 동기화
+        </button>
         <button
           onClick={getProjectById}
           className="px-4 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 transition-colors"

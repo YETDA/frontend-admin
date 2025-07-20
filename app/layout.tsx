@@ -1,7 +1,7 @@
-import type { ReactNode } from 'react';
+import { type ReactNode } from 'react';
 import { QueryProvider } from './providers/queryProvider';
+import TokenSync from './components/tokenSync';
 import '@/app/globals.css';
-import ClientAuthWrapper from './clientAuthWrapper';
 
 export const metadata = {
   title: '옜다 - 크라우드펀딩 운영센터',
@@ -24,8 +24,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     <html lang="ko">
       <body>
         <QueryProvider>
+          <TokenSync />
           {children}
-          {/* <ClientAuthWrapper>{children}</ClientAuthWrapper> */}
         </QueryProvider>
       </body>
     </html>

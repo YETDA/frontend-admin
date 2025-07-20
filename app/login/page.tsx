@@ -6,9 +6,15 @@ import Link from 'next/link';
 import { Github } from 'lucide-react';
 
 export default function LoginPage() {
-  const redirectUri = encodeURIComponent('http://localhost:3000');
-  const kakaoLoginUrl = `${process.env.NEXT_PUBLIC_API_URL}/oauth2/authorization/kakao?state=${redirectUri}`;
-  const githubLoginUrl = `${process.env.NEXT_PUBLIC_API_URL}/oauth2/authorization/github`;
+  const redirectUri = encodeURIComponent('http://localhost:3000/login/loading');
+
+  const handleKakaoLogin = () => {
+    window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/oauth2/authorization/kakao?state=${redirectUri}`;
+  };
+
+  const handleGithubLogin = () => {
+    window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/oauth2/authorization/github`;
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -29,9 +35,7 @@ export default function LoginPage() {
           <div className="space-y-4">
             <Button
               className="w-full h-12 bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-medium"
-              onClick={() => {
-                window.location.href = kakaoLoginUrl;
-              }}
+              onClick={handleKakaoLogin}
             >
               <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M12 3c5.799 0 10.5 3.664 10.5 8.185 0 4.52-4.701 8.184-10.5 8.184a13.5 13.5 0 0 1-1.727-.11l-4.408 2.883c-.501.265-.678.236-.472-.413l.892-3.678c-2.88-1.46-4.785-3.99-4.785-6.866C1.5 6.665 6.201 3 12 3z" />
@@ -42,16 +46,14 @@ export default function LoginPage() {
             <Button
               variant="outline"
               className="w-full h-12 border-gray-300 hover:bg-gray-50 font-medium bg-transparent"
-              onClick={() => {
-                window.location.href = githubLoginUrl;
-              }}
+              onClick={handleGithubLogin}
             >
               <Github className="w-5 h-5 mr-2" />
               Github 계정으로 로그인
             </Button>
 
             <div className="pt-4 border-t border-gray-200">
-              <Link href="/">
+              <Link href="https://www.yetfront.booktri.site/">
                 <Button variant="ghost" className="w-full h-12 text-gray-600 hover:text-gray-900 font-medium">
                   서비스 홈으로 가기
                 </Button>
