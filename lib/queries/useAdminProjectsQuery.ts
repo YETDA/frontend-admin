@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { fetchAdminProjects } from '@/lib/apis/projects';
+import { fetchAdminProjects } from '@/lib/apis/projects/projects';
 
 import { ProjectRow } from '@/types/page/projectReview/table';
 import {
