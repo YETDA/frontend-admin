@@ -45,18 +45,18 @@ export const adminSidebarMenu = [
     title: '커뮤니티 관리',
     items: [
       {
-        id: 'communityManagement',
-        label: '커뮤니티 관리',
+        id: 'userManagement',
+        label: '유저 관리 센터',
         icon: CommunityManagerIcon,
         description: '창작자 및 후원자 계정 관리',
-        disabled: true,
+        disabled: false,
       },
       {
         id: 'reportCenter',
         label: '신고 처리 센터',
         icon: ReportHandlerIcon,
         description: '플랫폼 안전성 확보를 위한 신고 처리',
-        disabled: true,
+        disabled: false,
       },
     ],
   },

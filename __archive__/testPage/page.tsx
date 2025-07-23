@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { fetchAdminProjects } from '@/lib/apis/projects';
+import { fetchAdminProjects } from '@/lib/apis/projects/getAdminProjects';
 import { getProjectById, getUserInfo, testAdminToken } from '@/lib/apis/test';
 import { decodeAccessToken, fetchAccessToken, getCookie, syncAccessTokenFromCookie } from '@/utils/cookie';
 
